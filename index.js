@@ -66,24 +66,19 @@ app.post('/api/register-teams', async (req, res) => {
  */
 
 /*
-{ "matches" : [
-    {
-    "team_1": "teamA",
-    "score_1": 0,
-    "team_2": "teamB",
-    "score_2": 1
+{
+    "matches": [
+        {
+            "team_1": "teamA",
+            "score_1": 0,
+            "team_2": "teamB",
+            "score_2": 1
         },
         {
-    "team_1": "teamC",
-    "score_1": 1,
-    "team_2": "teamB",
-    "score_2": 3
-        },
-        {
-    "team_1": "teamA",
-    "score_1": 2,
-    "team_2": "teamD",
-    "score_2": 2
+            "team_1": "teamA",
+            "score_1": 1,
+            "team_2": "teamC",
+            "score_2": 3
         }
     ]
 }
@@ -113,13 +108,6 @@ app.post('/api/register-matches', async (req, res) => {
 });
 
 // GET: Get rankings of each team for each group
-/*
-  Returns an object of a sorted array of tuples: {
-    group_number: {
-      [(team_name, normal_points, goals_scored, alternate_points, registration_date) ]
-    }
-  }
-*/
 app.get('/api/get-ranking', async (req, res) => {
   try {
     const matches = await db.getAllMatches();
@@ -132,52 +120,53 @@ app.get('/api/get-ranking', async (req, res) => {
     }
 
     // TODO: Each group should have its own ranking
-    const teamStore = {};
+    const dataStore = {};
     // TODO: Modularize and Refactor into helper functions for better modularity
     teams.forEach((team) => {
-      teamStore[team.team_name] = {};
-      teamStore[team.team_name]['teamName'] = team.team_name;
-      teamStore[team.team_name]['registrationDate'] = team.registration_date;
-      teamStore[team.team_name]['matchesPlayed'] = 0;
-      teamStore[team.team_name]['matchesWon'] = 0;
-      teamStore[team.team_name]['matchesDrawn'] = 0;
-      teamStore[team.team_name]['goalsScored'] = 0;
-      teamStore[team.team_name]['totalPoints'] = 0;
-      teamStore[team.team_name]['alternativePoints'] = 0;
+      dataStore[team.team_name] = {};
+      dataStore[team.team_name]['teamName'] = team.team_name;
+      dataStore[team.team_name]['groupNumber'] = team.group_number;
+      dataStore[team.team_name]['registrationDate'] = team.registration_date;
+      dataStore[team.team_name]['matchesPlayed'] = 0;
+      dataStore[team.team_name]['matchesWon'] = 0;
+      dataStore[team.team_name]['matchesDrawn'] = 0;
+      dataStore[team.team_name]['goalsScored'] = 0;
+      dataStore[team.team_name]['totalPoints'] = 0;
+      dataStore[team.team_name]['alternativePoints'] = 0;
     });
-    console.log(teamStore);
+    console.log(dataStore);
     // Evaluate result of each match
     for (const match of matches) {
       // Add goals scored for each team
-      teamStore[match.team_1]['goalsScored'] += match.score_1;
-      teamStore[match.team_2]['goalsScored'] += match.score_2;
+      dataStore[match.team_1]['goalsScored'] += match.score_1;
+      dataStore[match.team_2]['goalsScored'] += match.score_2;
       // Team 1 Wins
       if (match.score_1 > match.score_2) {
-        teamStore[match.team_1]['matchesWon'] += 1;
-        teamStore[match.team_1]['totalPoints'] += 3;
-        teamStore[match.team_1]['alternativePoints'] += 5;
-        teamStore[match.team_2]['alternativePoints'] += 1;
+        dataStore[match.team_1]['matchesWon'] += 1;
+        dataStore[match.team_1]['totalPoints'] += 3;
+        dataStore[match.team_1]['alternativePoints'] += 5;
+        dataStore[match.team_2]['alternativePoints'] += 1;
       }
       // Team 2 Wins
       else if (match.score_2 > match.score_1) {
-        teamStore[match.team_2]['matchesWon'] += 1;
-        teamStore[match.team_2]['totalPoints'] += 3;
-        teamStore[match.team_2]['alternativePoints'] += 5;
-        teamStore[match.team_1]['alternativePoints'] += 1;
+        dataStore[match.team_2]['matchesWon'] += 1;
+        dataStore[match.team_2]['totalPoints'] += 3;
+        dataStore[match.team_2]['alternativePoints'] += 5;
+        dataStore[match.team_1]['alternativePoints'] += 1;
       }
       // Draw
       else {
-        teamStore[match.team_1]['matchesDrawn'] += 1;
-        teamStore[match.team_1]['totalPoints'] += 1;
-        teamStore[match.team_1]['alternativePoints'] += 3;
-        teamStore[match.team_2]['matchesDrawn'] += 1;
-        teamStore[match.team_2]['totalPoints'] += 1;
-        teamStore[match.team_2]['alternativePoints'] += 3;
+        dataStore[match.team_1]['matchesDrawn'] += 1;
+        dataStore[match.team_1]['totalPoints'] += 1;
+        dataStore[match.team_1]['alternativePoints'] += 3;
+        dataStore[match.team_2]['matchesDrawn'] += 1;
+        dataStore[match.team_2]['totalPoints'] += 1;
+        dataStore[match.team_2]['alternativePoints'] += 3;
       }
     }
-    const sortedTeamStore = Object.values(teamStore);
+    const sortedDataStore = Object.values(dataStore);
     // TODO: Fix Sorting of Registration Date
-    sortedTeamStore.sort(
+    sortedDataStore.sort(
       (a, b) =>
         b.totalPoints - a.totalPoints ||
         b.goalsScored - a.goalsScored ||
@@ -186,7 +175,7 @@ app.get('/api/get-ranking', async (req, res) => {
     );
     res.json({
       message: `Ranking Processed!`,
-      team_results: sortedTeamStore,
+      team_results: sortedDataStore,
       type: 'success',
     });
   } catch (err) {
