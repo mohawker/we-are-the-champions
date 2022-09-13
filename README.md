@@ -1,5 +1,6 @@
 # We are the Champions
-Football Table Calculator built with React.js, Node.js and Postgres
+Football Table Calculator built with React.js, Node.js and Postgres by Er Jun Jia
+
 Both server and client are hosted on Heroku at https://we-are-the-champions-app.herokuapp.com/ 
 
 ## Instructions (to run locally)
