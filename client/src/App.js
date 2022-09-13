@@ -176,19 +176,6 @@ function App() {
     setGroupTwoRanking([]);
   };
 
-  // Custom Components/Elements
-  const groupOneRankingList = groupOneRanking ? (
-    groupOneRanking.map((ranking) => <li>{ranking.teamName}</li>)
-  ) : (
-    <p>No Ranking Obtained. Ensure teams and matches are properly populated.</p>
-  );
-
-  const groupTwoRankingList = groupTwoRanking ? (
-    groupTwoRanking.map((ranking) => <li>{ranking.teamName}</li>)
-  ) : (
-    <p>No Ranking Obtained. Ensure teams and matches are properly populated.</p>
-  );
-
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />

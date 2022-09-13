@@ -163,7 +163,6 @@ app.get('/api/get-ranking', async (req, res) => {
       }
     }
     const sortedDataStore = Object.values(dataStore);
-    // TODO: Fix Sorting of Registration Date
     sortedDataStore.sort(
       (a, b) =>
         b.totalPoints - a.totalPoints ||
