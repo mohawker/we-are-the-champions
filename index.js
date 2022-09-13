@@ -7,6 +7,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// CLIENT
+if (process.env.NODE_ENV === 'production') {
+  //server static content
+  //npm run build
+  app.use(express.static(path.join(__dirname, 'client/build')));
+}
+
 // ROUTES
 /**
  * POST: Create and INSERT new team into TABLE teams.
@@ -231,6 +238,11 @@ app.post('/api/delete-all-teams', async (req, res) => {
   } catch (err) {
     return res.json({ message: `Error Message: ${err}`, type: 'failure' });
   }
+});
+
+// Catch all other invalid routes and redirect to homepage
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/build/index.html'));
 });
 
 const PORT = process.env.PORT || 4000;
