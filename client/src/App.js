@@ -1,5 +1,5 @@
 import './App.css';
-import { useState, Fragment, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 // MUI Components
 import Container from '@mui/material/Container';
@@ -9,18 +9,20 @@ import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
-import SendIcon from '@mui/icons-material/Send';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
 // MUI Icons
 import CloseIcon from '@mui/icons-material/Close';
+import SendIcon from '@mui/icons-material/Send';
 
 // Animation Libraries
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+
+// Custom Components
+import InputTextField from './components/InputTextField';
 
 const axios = require('axios');
 function App() {
@@ -93,6 +95,8 @@ function App() {
         setTeamMessage(err.message);
       });
     setIsLoading(false);
+    setDeleteMatchMessage('');
+    setDeleteTeamMessage('');
   };
 
   const enterMatches = (e) => {
@@ -129,6 +133,8 @@ function App() {
         setMatchMessage(err.message);
       });
     setIsLoading(false);
+    setDeleteMatchMessage('');
+    setDeleteTeamMessage('');
   };
 
   const getRanking = (e) => {
@@ -136,7 +142,6 @@ function App() {
     axios
       .get('/api/get-ranking')
       .then(function (res) {
-        const res_type = res.data.type;
         setGroupOneRanking(res.data.group_one_ranking);
         setGroupTwoRanking(res.data.group_two_ranking);
         setRankingMessage(res.data.message);
@@ -171,29 +176,6 @@ function App() {
   };
 
   // Custom Components/Elements
-
-  const TeamSendButton = () => (
-    <LoadingButton
-      onClick={() => registerTeams()}
-      loading={isLoading}
-      size='small'
-      color='inherit'
-    >
-      <SendIcon />
-    </LoadingButton>
-  );
-
-  const MatchSendButton = () => (
-    <LoadingButton
-      onClick={() => enterMatches()}
-      loading={isLoading}
-      size='small'
-      color='inherit'
-    >
-      <SendIcon />
-    </LoadingButton>
-  );
-
   const groupOneRankingList = groupOneRanking ? (
     groupOneRanking.map((ranking) => <li>{ranking.teamName}</li>)
   ) : (
@@ -214,68 +196,34 @@ function App() {
           <Typography variant='h3' fontWeight='bold'>
             We are the Champions
           </Typography>
-          <Paper className='paper'>
-            <Stack spacing={1}>
-              <Typography variant='h5'>Team Registration</Typography>
-              <Typography variant='subtitle2'>
-                <u>Input Format</u>
-                <br />
-                &lt;Team A name&gt; &lt;Team A registration date in DD/MM&gt;
-                &lt;Team A group number&gt;
-              </Typography>
-              <TextField
-                multiline
-                error={teamIsError}
-                label='Register teams here: '
-                variant='outlined'
-                rows={10}
-                value={teamInput}
-                helperText={teamMessage}
-                onChange={(input) => {
-                  setTeamInput(input.target.value);
-                  setTeamMessage('');
-                  setTeamIsError(false);
-                }}
-                InputProps={{ endAdornment: <TeamSendButton /> }}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    registerTeams();
-                  }
-                }}
-              />
-            </Stack>
-          </Paper>
-          <Paper className='paper'>
-            <Stack spacing={1}>
-              <Typography variant='h5'>Enter Match Results</Typography>
-              <Typography variant='subtitle2'>
-                <u>Input Format</u>
-                <br />
-                &lt;Team A name&gt; &lt;Team B Name&gt; &lt;Team A goals
-                scored&gt; &lt;Team B goals scored&gt;
-              </Typography>
-              <TextField
-                multiline
-                error={matchIsError}
-                label='Enter match results here: '
-                variant='outlined'
-                rows={10}
-                value={matchInput}
-                helperText={matchMessage}
-                onChange={(input) => {
-                  setMatchInput(input.target.value);
-                  setMatchMessage('');
-                  setMatchIsError(false);
-                }}
-                InputProps={{ endAdornment: <MatchSendButton /> }}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    enterMatches();
-                  }
-                }}
-              />
-            </Stack>
-          </Paper>
+          <InputTextField
+            title='Team Registration'
+            subtitleInputFormat='&lt;Team A name&gt; &lt;Team A registration date in DD/MM&gt;
+                &lt;Team A group number&gt;'
+            label='Register teams here:'
+            error={teamIsError}
+            input={teamInput}
+            message={teamMessage}
+            setInput={setTeamInput}
+            setMessage={setTeamMessage}
+            setError={setTeamIsError}
+            inputAction={registerTeams}
+            isLoading={isLoading}
+          />
+          <InputTextField
+            title='Enter Match Results'
+            subtitleInputFormat='&lt;Team A name&gt; &lt;Team B Name&gt; &lt;Team A goals
+                scored&gt; &lt;Team B goals scored&gt;'
+            label='Enter match results here:'
+            error={matchIsError}
+            input={matchInput}
+            message={matchMessage}
+            setInput={setMatchInput}
+            setMessage={setMatchMessage}
+            setError={setMatchIsError}
+            inputAction={enterMatches}
+            isLoading={isLoading}
+          />
           <Paper className='paper'>
             <Stack spacing={1}>
               <Typography variant='h5'>Ranking</Typography>
@@ -299,7 +247,7 @@ function App() {
               </Grid>
             </Stack>
           </Paper>
-          <Box>
+          <Stack spacing={1}>
             <LoadingButton
               color='error'
               variant='contained'
@@ -309,7 +257,7 @@ function App() {
             </LoadingButton>
             <Typography variant='subtitle2'>{deleteTeamMessage}</Typography>
             <Typography variant='subtitle2'>{deleteMatchMessage}</Typography>
-          </Box>
+          </Stack>
         </Stack>
       </Container>
     </ThemeProvider>
