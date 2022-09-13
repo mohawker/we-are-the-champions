@@ -172,10 +172,10 @@ function App() {
     setIsLoading(false);
   };
 
-  const deleteAll = (e) => {
+  const deleteAll = async (e) => {
     setIsLoading(true);
     try {
-      axios
+      await axios
         .post('/api/delete-all-matches')
         .then(function (res) {
           setDeleteMatchMessage(res.data.message);
@@ -184,7 +184,7 @@ function App() {
           console.log(err);
         });
 
-      axios
+      await axios
         .post('/api/delete-all-teams')
         .then(function (res) {
           setDeleteTeamMessage(res.data.message);
@@ -269,8 +269,8 @@ function App() {
             >
               Delete all matches and teams
             </LoadingButton>
-            <Typography variant='subtitle2'>{deleteTeamMessage}</Typography>
             <Typography variant='subtitle2'>{deleteMatchMessage}</Typography>
+            <Typography variant='subtitle2'>{deleteTeamMessage}</Typography>
           </Stack>
         </Stack>
       </Container>
