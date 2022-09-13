@@ -47,7 +47,9 @@ function App() {
 
   // Ranking States
   const [groupOneRanking, setGroupOneRanking] = useState([]);
+  const [groupOneQualified, setGroupOneQualified] = useState([]);
   const [groupTwoRanking, setGroupTwoRanking] = useState([]);
+  const [groupTwoQualified, setGroupTwoQualified] = useState([]);
   const [rankingMessage, setRankingMessage] = useState('');
 
   // Delete States
@@ -157,6 +159,8 @@ function App() {
         .then(function (res) {
           setGroupOneRanking(res.data.group_one_ranking);
           setGroupTwoRanking(res.data.group_two_ranking);
+          setGroupOneQualified(res.data.group_one_qualified);
+          setGroupTwoQualified(res.data.group_two_qualified);
           setRankingMessage(res.data.message);
         })
         .catch(function (err) {
@@ -191,6 +195,8 @@ function App() {
 
       setGroupOneRanking([]);
       setGroupTwoRanking([]);
+      setGroupOneQualified([]);
+      setGroupTwoQualified([]);
       setRankingMessage('');
     } catch (err) {
       setDeleteMatchMessage(err.message);
@@ -238,17 +244,19 @@ function App() {
             <Stack spacing={1}>
               <Typography variant='h5'>Ranking</Typography>
               <LoadingButton variant='contained' onClick={getRanking}>
-                Get Ranking
+                CLICK HERE TO GET RANKING RESULTS
               </LoadingButton>
               <Typography variant='subtitle2'>{rankingMessage}</Typography>
               <Grid container>
                 <RankingList
                   title='Group One Ranking (Descending)'
                   rankingArray={groupOneRanking}
+                  qualifiedArray={groupOneQualified}
                 />
                 <RankingList
                   title='Group Two Ranking (Descending)'
                   rankingArray={groupTwoRanking}
+                  qualifiedArray={groupTwoQualified}
                 />
               </Grid>
             </Stack>
