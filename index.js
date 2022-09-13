@@ -187,7 +187,7 @@ app.get('/api/get-ranking', async (req, res) => {
       .map((team) => team.teamName);
 
     res.json({
-      message: `Ranking Processed!`,
+      message: `Ranking processed successfully!`,
       team_results: sortedDataStore,
       group_one_ranking: groupOneRanking,
       group_one_qualified: groupOneQualified,
