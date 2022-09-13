@@ -1,0 +1,41 @@
+.homepage {
+  text-align: center;
+  background-color: #282c34;
+  min-height: 100vh;
+  min-width: 100%;
+  padding: 5vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  flex: 1;
+}
+
+.homepage-stack {
+  text-align: center;
+  padding: 5vh 5vw;
+  min-height: 100%;
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.paper {
+  width: 100%;
+  padding: 30px;
+}
+
+.ranking-paper {
+  padding: 30px;
+  margin: 20px;
+}
+
+.footer {
+  min-height: 10vh;
+  margin-top: auto;
+}
