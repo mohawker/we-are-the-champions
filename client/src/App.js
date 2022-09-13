@@ -63,117 +63,138 @@ function App() {
   // Helper Functions
   const registerTeams = (e) => {
     setIsLoading(true);
-    const teamArray = teamInput.trim().split(/\r?\n/);
-    const toBeRegistered = [];
-    for (const teamString of teamArray) {
-      let [name, regDate, group] = teamString.split(' ');
-      const regDay = regDate.split('/')[0];
-      const regMonth = regDate.split('/')[1];
-      // Assume year is 2022
-      regDate = '2022' + '-' + regMonth + '-' + regDay;
-      const teamObj = {
-        name: name,
-        group: group,
-        registrationDate: regDate,
-      };
-      toBeRegistered.push(teamObj);
-    }
-    axios
-      .post('/api/register-teams', { teams: toBeRegistered })
-      .then(function (res) {
-        const res_type = res.data.type;
-        const teamsRegistered = res.data.teams_registered;
-        const message = res.data.message;
-        setTeamMessage(message);
-        if (res_type === 'failure' || teamsRegistered === undefined) {
+    try {
+      const teamArray = teamInput.trim().split(/\r?\n/);
+      const toBeRegistered = [];
+      for (const teamString of teamArray) {
+        let [name, regDate, group] = teamString.split(' ');
+        const regDay = regDate.split('/')[0];
+        const regMonth = regDate.split('/')[1];
+        // Assume year is 2022
+        regDate = '2022' + '-' + regMonth + '-' + regDay;
+        const teamObj = {
+          name: name,
+          group: group,
+          registrationDate: regDate,
+        };
+        toBeRegistered.push(teamObj);
+      }
+      axios
+        .post('/api/register-teams', { teams: toBeRegistered })
+        .then(function (res) {
+          const res_type = res.data.type;
+          const teamsRegistered = res.data.teams_registered;
+          const message = res.data.message;
+          setTeamMessage(message);
+          if (res_type === 'failure' || teamsRegistered === undefined) {
+            setTeamIsError(true);
+          } else {
+            setTeamIsError(false);
+          }
+        })
+        .catch(function (err) {
           setTeamIsError(true);
-        } else {
-          setTeamIsError(false);
-        }
-      })
-      .catch(function (err) {
-        setTeamIsError(true);
-        setTeamMessage(err.message);
-      });
+          setTeamMessage(err.message);
+          setIsLoading(false);
+        });
+      setDeleteMatchMessage('');
+      setDeleteTeamMessage('');
+    } catch (err) {
+      setTeamMessage(err.message);
+      setTeamIsError(true);
+    }
     setIsLoading(false);
-    setDeleteMatchMessage('');
-    setDeleteTeamMessage('');
   };
 
   const enterMatches = (e) => {
     setIsLoading(true);
-    const matchArray = matchInput.trim().split(/\r?\n/);
-    const toBeEntered = [];
-    for (const matchString of matchArray) {
-      console.log(matchString);
-      let [team_1, team_2, score_1, score_2] = matchString.split(' ');
-      const matchObj = {
-        team_1: team_1,
-        score_1: score_1,
-        team_2: team_2,
-        score_2: score_2,
-      };
-      toBeEntered.push(matchObj);
-    }
-    axios
-      .post('/api/enter-matches', { matches: toBeEntered })
-      .then(function (res) {
-        const res_type = res.data.type;
-        console.log(res);
-        const matchesEntered = res.data.matches_entered;
-        const message = res.data.message;
-        setMatchMessage(message);
-        if (res_type === 'failure' || matchesEntered === undefined) {
+    try {
+      const matchArray = matchInput.trim().split(/\r?\n/);
+      const toBeEntered = [];
+      for (const matchString of matchArray) {
+        console.log(matchString);
+        let [team_1, team_2, score_1, score_2] = matchString.split(' ');
+        const matchObj = {
+          team_1: team_1,
+          score_1: score_1,
+          team_2: team_2,
+          score_2: score_2,
+        };
+        toBeEntered.push(matchObj);
+      }
+      axios
+        .post('/api/enter-matches', { matches: toBeEntered })
+        .then(function (res) {
+          const res_type = res.data.type;
+          console.log(res);
+          const matchesEntered = res.data.matches_entered;
+          const message = res.data.message;
+          setMatchMessage(message);
+          if (res_type === 'failure' || matchesEntered === undefined) {
+            setMatchIsError(true);
+          } else {
+            setMatchIsError(false);
+          }
+        })
+        .catch(function (err) {
           setMatchIsError(true);
-        } else {
-          setMatchIsError(false);
-        }
-      })
-      .catch(function (err) {
-        setMatchIsError(true);
-        setMatchMessage(err.message);
-      });
+          setMatchMessage(err.message);
+        });
+      setDeleteMatchMessage('');
+      setDeleteTeamMessage('');
+    } catch (err) {
+      setMatchMessage(err.message);
+      setMatchIsError(true);
+    }
     setIsLoading(false);
-    setDeleteMatchMessage('');
-    setDeleteTeamMessage('');
   };
 
   const getRanking = (e) => {
     setIsLoading(true);
-    axios
-      .get('/api/get-ranking')
-      .then(function (res) {
-        setGroupOneRanking(res.data.group_one_ranking);
-        setGroupTwoRanking(res.data.group_two_ranking);
-        setRankingMessage(res.data.message);
-      })
-      .catch(function (err) {
-        console.log(err);
-      });
+    try {
+      axios
+        .get('/api/get-ranking')
+        .then(function (res) {
+          setGroupOneRanking(res.data.group_one_ranking);
+          setGroupTwoRanking(res.data.group_two_ranking);
+          setRankingMessage(res.data.message);
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+    } catch (err) {
+      setRankingMessage(err.message);
+    }
     setIsLoading(false);
   };
 
   const deleteAll = (e) => {
-    axios
-      .post('/api/delete-all-matches')
-      .then(function (res) {
-        setDeleteMatchMessage(res.data.message);
-      })
-      .catch(function (err) {
-        console.log(err);
-      });
+    setIsLoading(true);
+    try {
+      axios
+        .post('/api/delete-all-matches')
+        .then(function (res) {
+          setDeleteMatchMessage(res.data.message);
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
 
-    axios
-      .post('/api/delete-all-teams')
-      .then(function (res) {
-        setDeleteTeamMessage(res.data.message);
-      })
-      .catch(function (err) {
-        console.log(err);
-      });
+      axios
+        .post('/api/delete-all-teams')
+        .then(function (res) {
+          setDeleteTeamMessage(res.data.message);
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
 
-    setGroupOneRanking([]);
-    setGroupTwoRanking([]);
+      setGroupOneRanking([]);
+      setGroupTwoRanking([]);
+    } catch (err) {
+      setDeleteMatchMessage(err.message);
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -189,7 +210,7 @@ function App() {
             subtitleInputFormat='&lt;Team A name&gt; &lt;Team A registration date in DD/MM&gt;
                 &lt;Team A group number&gt;'
             label='Register teams here:'
-            error={teamIsError}
+            isError={teamIsError}
             input={teamInput}
             message={teamMessage}
             setInput={setTeamInput}
@@ -203,7 +224,7 @@ function App() {
             subtitleInputFormat='&lt;Team A name&gt; &lt;Team B Name&gt; &lt;Team A goals
                 scored&gt; &lt;Team B goals scored&gt;'
             label='Enter match results here:'
-            error={matchIsError}
+            isError={matchIsError}
             input={matchInput}
             message={matchMessage}
             setInput={setMatchInput}
@@ -221,11 +242,11 @@ function App() {
               <Typography variant='subtitle2'>{rankingMessage}</Typography>
               <Grid container>
                 <RankingList
-                  title='Group One Ranking'
+                  title='Group One Ranking (Descending)'
                   rankingArray={groupOneRanking}
                 />
                 <RankingList
-                  title='Group Two Ranking'
+                  title='Group Two Ranking (Descending)'
                   rankingArray={groupTwoRanking}
                 />
               </Grid>
