@@ -83,10 +83,10 @@ app.post('/api/register-teams', async (req, res) => {
     ]
 }
 */
-app.post('/api/register-matches', async (req, res) => {
+app.post('/api/enter-matches', async (req, res) => {
   try {
     const matches = req.body.matches;
-    const matchesRegistered = [];
+    const matchesEntered = [];
     for await (const match of matches) {
       const matchId = await db.insertMatch(
         match.team_1,
@@ -94,12 +94,12 @@ app.post('/api/register-matches', async (req, res) => {
         match.team_2,
         match.score_2
       );
-      matchesRegistered.push(matchId);
+      matchesEntered.push(matchId);
     }
-    const matchesRegisteredString = matchesRegistered.join(', ');
+    const matchesEnteredString = matchesEntered.join(', ');
     res.json({
-      message: `Matches ${matchesRegisteredString} successfully registered.`,
-      teams_registered: matchesRegistered,
+      message: `Matches ${matchesEnteredString} successfully registered.`,
+      matches_entered: matchesEntered,
       type: 'success',
     });
   } catch (err) {
@@ -112,14 +112,13 @@ app.get('/api/get-ranking', async (req, res) => {
   try {
     const matches = await db.getAllMatches();
     const teams = await db.getAllTeams();
-    if (matches === undefined || matches.length === 0) {
-      return res.json({ message: `No matches found!`, type: 'failure' });
+    if (matches === undefined) {
+      return res.json({ message: `Could not get matches!`, type: 'failure' });
     }
     if (teams === undefined || teams.length === 0) {
       return res.json({ message: `No teams found!`, type: 'failure' });
     }
 
-    // TODO: Each group should have its own ranking
     const dataStore = {};
     // TODO: Modularize and Refactor into helper functions for better modularity
     teams.forEach((team) => {
@@ -134,7 +133,6 @@ app.get('/api/get-ranking', async (req, res) => {
       dataStore[team.team_name]['totalPoints'] = 0;
       dataStore[team.team_name]['alternativePoints'] = 0;
     });
-    console.log(dataStore);
     // Evaluate result of each match
     for (const match of matches) {
       // Add goals scored for each team
@@ -173,9 +171,28 @@ app.get('/api/get-ranking', async (req, res) => {
         b.alternativePoints - a.alternativePoints ||
         new Date(a.registrationDate) - new Date(b.registrationDate)
     );
+    // Assumption: Only two groups identified by group number 1 or 2
+    const groupOneRanking = sortedDataStore.filter((obj) => {
+      return obj.groupNumber === 1;
+    });
+    const groupTwoRanking = sortedDataStore.filter((obj) => {
+      return obj.groupNumber === 2;
+    });
+
+    const groupOneQualified = groupOneRanking
+      .slice(0, 4)
+      .map((team) => team.teamName);
+    const groupTwoQualified = groupTwoRanking
+      .slice(0, 4)
+      .map((team) => team.teamName);
+
     res.json({
       message: `Ranking Processed!`,
       team_results: sortedDataStore,
+      group_one_ranking: groupOneRanking,
+      group_one_qualified: groupOneQualified,
+      group_two_ranking: groupTwoRanking,
+      group_two_qualified: groupTwoQualified,
       type: 'success',
     });
   } catch (err) {
@@ -183,11 +200,39 @@ app.get('/api/get-ranking', async (req, res) => {
   }
 });
 
-// Optional: DEL match record (individually)
+/**
+ * POST: DEL all match records in TABLE matches
+ * @name /api/delete-all-matches
+ * @function
+ */
+app.post('/api/delete-all-matches', async (req, res) => {
+  try {
+    await db.deleteAllMatches();
+    res.json({
+      message: `All matches successfully deleted.`,
+      type: 'success',
+    });
+  } catch (err) {
+    return res.json({ message: `Error Message: ${err}`, type: 'failure' });
+  }
+});
 
-// POST: DEL all match records
-
-// POST: DEL all team records
+/**
+ * POST: DEL all team records in TABLE teams
+ * @name /api/delete-all-teams
+ * @function
+ */
+app.post('/api/delete-all-teams', async (req, res) => {
+  try {
+    await db.deleteAllTeams();
+    res.json({
+      message: `All teams successfully deleted.`,
+      type: 'success',
+    });
+  } catch (err) {
+    return res.json({ message: `Error Message: ${err}`, type: 'failure' });
+  }
+});
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () =>

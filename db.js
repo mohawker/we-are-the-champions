@@ -48,7 +48,17 @@ const getAllTeams = async () => {
   return res.rows;
 };
 
+const deleteAllTeams = async () => {
+  await pool.query('DELETE FROM teams');
+};
+
+const deleteAllMatches = async () => {
+  await pool.query('DELETE FROM matches');
+};
+
 exports.insertTeam = insertTeam;
 exports.insertMatch = insertMatch;
 exports.getAllMatches = getAllMatches;
 exports.getAllTeams = getAllTeams;
+exports.deleteAllTeams = deleteAllTeams;
+exports.deleteAllMatches = deleteAllMatches;
