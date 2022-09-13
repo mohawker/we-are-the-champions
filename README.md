@@ -23,6 +23,7 @@ The server will use your local database to store the tables necessary.
 - `npm run start` - To start the client on https://localhost:3000
 
 ## Demo
+![demo](https://user-images.githubusercontent.com/48997733/189912415-a7d45cb5-1d62-4817-baa2-f1f92b6fec75.gif)
 
 ## Application Objective
 Given a list of teams to be registered and match results (in the format given), return the ranking of each of the teams within the group. The top 4 teams of each group will qualify for the next stage of the tournament. 
@@ -52,3 +53,7 @@ After team registration + entering results, users will be able to generate the r
 ## Assumptions
 - During team registration, teams can only be of group 1 or 2 (no other naming convention for group)
 - As stated in the assignment, the application does not need to handle the processing of results for subsequent rounds of the championship
+
+## Other Features
+- Error messages returned by the BE will be displayed on the FE should the user try to input erroneous input.
+- Website is designed to be mobile friendly (grid and sizing)
