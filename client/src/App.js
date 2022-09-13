@@ -191,6 +191,7 @@ function App() {
 
       setGroupOneRanking([]);
       setGroupTwoRanking([]);
+      setRankingMessage('');
     } catch (err) {
       setDeleteMatchMessage(err.message);
     }
