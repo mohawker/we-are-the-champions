@@ -23,6 +23,7 @@ import 'aos/dist/aos.css';
 
 // Custom Components
 import InputTextField from './components/InputTextField';
+import RankingList from './components/RankingList';
 
 const axios = require('axios');
 function App() {
@@ -232,18 +233,14 @@ function App() {
               </LoadingButton>
               <Typography variant='subtitle2'>{rankingMessage}</Typography>
               <Grid container>
-                <Grid item md={6} sm={12}>
-                  <Paper elevation={2} className='ranking-paper'>
-                    <Typography>Group One Ranking</Typography>
-                    <ol>{groupOneRankingList}</ol>
-                  </Paper>
-                </Grid>
-                <Grid item md={6} sm={12}>
-                  <Paper elevation={2} className='ranking-paper'>
-                    <Typography>Group Two Ranking</Typography>
-                    <ol>{groupTwoRankingList}</ol>
-                  </Paper>
-                </Grid>
+                <RankingList
+                  title='Group One Ranking'
+                  rankingArray={groupOneRanking}
+                />
+                <RankingList
+                  title='Group Two Ranking'
+                  rankingArray={groupTwoRanking}
+                />
               </Grid>
             </Stack>
           </Paper>
